@@ -205,9 +205,9 @@ class App(tk.Frame):
         label1_frame_app.pack()
         self.mystery = Mystery()
 
-        self.change_image()
+        self.change_image(master)
 
-    def change_image(self):
+    def change_image(self, master):
         mystery_image = self.mystery.get_mystery()
 
         global img
@@ -219,7 +219,11 @@ class App(tk.Frame):
         #Canvasを配置
         canvas.pack()
 
-        return True
+        master.after(500, self.check_voice)
+    
+    def check_voice():
+        return False
+    
 
 
 if __name__ == "__main__":
