@@ -64,8 +64,8 @@ def change_window(window):
     window.tkraise()
 
 def put_image(frame):
-     #Canvasの作成
-    
+    #Canvasの作成
+
     canvas = tk.Canvas(frame, bg = "black" ,width=897, height=497)
     item = canvas.create_image(0, 0, image=imglist[0],anchor='nw')
     #Canvasを配置
@@ -151,7 +151,7 @@ def receive_words():
             line = re.findall('\>(.*)\<', line)
             line = line[0].replace(" ","")
             transcribe_words.append(line)
-        
+
         if line == "":
             print("receive julius results finish")
             break
@@ -181,7 +181,7 @@ def check_start(kw):
 
             change_window(sub_frame)
         else:
-            root.after(500, check_start)
+            root.after(500, check_start, kw)
     else:
         """
         スマホが置かれてないことを強調する
@@ -191,7 +191,6 @@ def check_start(kw):
         big_start = ImageTk.PhotoImage(big_start)
 
         kw['canvas'].itemconfig(kw['item'], image=big_start)
-
 
         root.after(2000, delete_img, kw)
 
@@ -212,7 +211,7 @@ class App(tk.Frame):
         self.mystery = Mystery()
 
         self.put_image(master)
-    
+
     def put_image(self, master):
         mystery_image = self.mystery.get_mystery()
 
@@ -229,7 +228,6 @@ class App(tk.Frame):
         self.item = item
 
         master.after(500, self.check_voice, master)
-
 
     def change_image(self, master):
         #終了判定
@@ -252,7 +250,7 @@ class App(tk.Frame):
             self.canvas.itemconfig(self.item, image=img)
 
         master.after(500, self.check_voice, master)
-    
+
     def check_voice(self, master):
         #print(transcribe_words)
 
@@ -263,7 +261,7 @@ class App(tk.Frame):
             self.change_image(master)
         else:
             master.after(500, self.check_voice, master)
-    
+
 
 
 if __name__ == "__main__":
