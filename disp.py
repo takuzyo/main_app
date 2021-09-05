@@ -158,7 +158,7 @@ def receive_words():
     while True:
         line = sys.stdin.readline()
         if 'sentence1' in line:
-            line = re.findall('\](.*)\[', line)
+            line = re.findall('\>(.*)\<', line)
             line = line[0].replace(" ","")
             transcribe_words.append(line)
         
@@ -184,7 +184,7 @@ def check_start():
     phone_able = check_phone()
     word = get_words()
 
-    if phone_able and word == "sentence1 " + START_SENTENCE + "\n":
+    if phone_able and word ==  START_SENTENCE:
         print('start app')
         sub_frame = App(root)
 
