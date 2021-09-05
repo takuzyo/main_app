@@ -12,6 +12,9 @@ WINDOW_HEIGHT = 600
 #センサー距離
 SENSOR_DISTANCE = 3
 
+#開始用のセリフ
+START_SENTENCE = 'START'
+
 global transcribe_words
 
 class Window(tk.Tk): 
@@ -101,14 +104,19 @@ def define_image():
     global imglist
     imglist = [img, img2, img3, img4]
 
-'''
+
 def reading(sensor):
     """
     超音波センサーの読み込み
     """
 
     import time
-    import RPi.GPIO as GPIO
+
+    try:
+        import RPi.GPIO as GPIO
+    except ModuleNotFoundError:
+        rnd = random.randint(0,10)
+        return 2
     GPIO.setwarnings(False)
 
     GPIO.setmode(GPIO.BOARD)
@@ -137,15 +145,7 @@ def reading(sensor):
         GPIO.cleanup()
     else:
         print("Incorrect usonic() function varible.")
-'''
-
-def reading(sensor):
-    """
-    readingのテスト用
-    """
-    rnd = random.randint(0,10)
-    return 2
-
+        
 def check_phone():
     """
     スマホが装置に置かれたか確認
@@ -184,10 +184,8 @@ def get_words():
 def check_start():
     phone_able = check_phone()
     word = get_words()
-    print("get sentence :" + word)
-    print("flag : " + str(word == "sentence1 START\n"))
 
-    if phone_able and word == "sentence1 START\n":
+    if phone_able and word == "sentence1 " + START_SENTENCE + "\n":
         print('start app')
         change_window(sub_frame)
     else:
