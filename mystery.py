@@ -33,6 +33,9 @@ class Mystery:
             "ans": answer
         }
         res = requests.post(request_url, json=data)
+        if res.text is None:
+            return False
+        
         val = json.loads(res.text)
         
         result = val["result"]

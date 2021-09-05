@@ -254,9 +254,8 @@ class App(tk.Frame):
     def check_voice(self, master):
         #print(transcribe_words)
 
-        word = get_words().split()
-        print(word)
-        flag = self.mystery.check_answer(word[1])
+        word = get_words()
+        flag = self.mystery.check_answer(word)
         if flag:
             self.change_image(master)
         else:
