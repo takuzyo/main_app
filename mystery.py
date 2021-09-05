@@ -4,7 +4,7 @@ import urllib.request, urllib.parse
 
 class Mystery:
 
-    def ___init__(self):
+    def __init__(self):
         #tokenは編集してね♡
         self.TOKEN = 1
         self.mystery_url = 'https://????.??/api/game/'
@@ -16,8 +16,8 @@ class Mystery:
         謎解き取得
         TODO: 取得
         """
-        request_url = self.mystery_url
-        image = ''
+
+        image = './img/1-1.png'
         return image
     
     def check_answer(self):

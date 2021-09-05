@@ -6,6 +6,8 @@ import random
 import sys
 from threading import Thread
 from mystery import Mystery
+import time
+
 
 # 表示するウィンドウの幅と高さ
 WINDOW_WIDTH = 1024
@@ -112,7 +114,6 @@ def reading(sensor):
     超音波センサーの読み込み
     """
 
-    import time
 
     try:
         import RPi.GPIO as GPIO
@@ -203,9 +204,22 @@ class App(tk.Frame):
         label1_frame_app = tk.Label(self, text="アプリウィンドウ")
         label1_frame_app.pack()
         self.mystery = Mystery()
-        
-    def change_image():
-        return False
+
+        self.change_image()
+
+    def change_image(self):
+        mystery_image = self.mystery.get_mystery()
+
+        global img
+        img = Image.open(mystery_image)
+        img = ImageTk.PhotoImage(img)
+
+        canvas = tk.Canvas(self, bg = "black" ,width=762, height=433)
+        canvas.create_image(0, 0, image=img,anchor='nw')
+        #Canvasを配置
+        canvas.pack()
+
+        return True
 
 
 if __name__ == "__main__":
