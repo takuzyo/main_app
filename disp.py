@@ -65,6 +65,7 @@ def change_window(window):
 
 def put_image(frame):
      #Canvasの作成
+    
     canvas = tk.Canvas(frame, bg = "black" ,width=897, height=497)
     item = canvas.create_image(0, 0, image=imglist[0],anchor='nw')
     #Canvasを配置
@@ -72,22 +73,11 @@ def put_image(frame):
 
     kw = {
         "canvas": canvas,
-        "item": item
+        "item": item,
     }
 
-    root.after(3000, repeat_image, kw)
+    return kw
 
-
-def repeat_image(kw):
-    """
-    画像を定期的に切り替える
-    """
-    rnd = random.randint(0,(len(imglist) - 1))
-    print(imglist[rnd])
-
-    kw['canvas'].itemconfig(kw['item'], image=imglist[rnd])
-
-    root.after(3000, repeat_image, kw)
 
 def define_image():
     """
@@ -110,7 +100,7 @@ def reading(sensor):
     try:
         import RPi.GPIO as GPIO
     except ModuleNotFoundError:
-        return 2
+        return 4
     GPIO.setwarnings(False)
 
     GPIO.setmode(GPIO.BOARD)
@@ -177,20 +167,37 @@ def get_words():
 
     return word
 
-def check_start():
+def check_start(kw):
     """
     開始確認
     """
     phone_able = check_phone()
     word = get_words()
 
-    if phone_able and word ==  START_SENTENCE:
-        print('start app')
-        sub_frame = App(root)
+    if phone_able:
+        if word ==  START_SENTENCE:
+            print('start app')
+            sub_frame = App(root)
 
-        change_window(sub_frame)
+            change_window(sub_frame)
+        else:
+            root.after(500, check_start)
     else:
-        root.after(500, check_start)
+        """
+        スマホが置かれてないことを強調する
+        """
+        global big_start
+        big_start = Image.open('img/start2.png')
+        big_start = ImageTk.PhotoImage(big_start)
+
+        kw['canvas'].itemconfig(kw['item'], image=big_start)
+
+
+        root.after(2000, delete_img, kw)
+
+def delete_img(kw):
+    kw['canvas'].itemconfig(kw['item'], image=imglist[0])
+    root.after(2000, check_start, kw)
 
 
 class App(tk.Frame):
@@ -204,7 +211,25 @@ class App(tk.Frame):
         label1_frame_app.pack()
         self.mystery = Mystery()
 
-        self.change_image(master)
+        self.put_image(master)
+    
+    def put_image(self, master):
+        mystery_image = self.mystery.get_mystery()
+
+        global img
+        img = Image.open(mystery_image)
+        img = ImageTk.PhotoImage(img)
+
+        canvas = tk.Canvas(self, bg = "black" ,width=897, height=497)
+        item = canvas.create_image(0, 0, image=img,anchor='nw')
+        #Canvasを配置
+        canvas.pack(expand = True)
+
+        self.canvas = canvas
+        self.item = item
+
+        master.after(500, self.check_voice, master)
+
 
     def change_image(self, master):
         #終了判定
@@ -217,17 +242,14 @@ class App(tk.Frame):
 
             #Canvasを配置
             canvas.pack(expand = True)
-        
-        mystery_image = self.mystery.get_mystery()
+        else:
+            mystery_image = self.mystery.get_mystery()
 
-        global img
-        img = Image.open(mystery_image)
-        img = ImageTk.PhotoImage(img)
+            global img
+            img = Image.open(mystery_image)
+            img = ImageTk.PhotoImage(img)
 
-        canvas = tk.Canvas(self, bg = "black" ,width=897, height=497)
-        canvas.create_image(0, 0, image=img,anchor='nw')
-        #Canvasを配置
-        canvas.pack(expand = True)
+            self.canvas.itemconfig(self.item, image=img)
 
         master.after(500, self.check_voice, master)
     
@@ -238,7 +260,7 @@ class App(tk.Frame):
         print(word)
         flag = self.mystery.check_answer(word[1])
         if flag:
-            self.change_image()
+            self.change_image(master)
         else:
             master.after(500, self.check_voice, master)
     
@@ -253,7 +275,7 @@ if __name__ == "__main__":
     # rootメインウィンドウの設定
     root = Window('メインウィンドウ')
     root.setSize(WINDOW_WIDTH, WINDOW_HEIGHT)
-    root.attributes('-fullscreen', True)
+    #root.attributes('-fullscreen', True)
 
     # rootメインウィンドウのグリッドを 1x1 にする
     root.grid_rowconfigure(0, weight=1)
@@ -264,8 +286,8 @@ if __name__ == "__main__":
     main_frame.grid(row=0, column=0, sticky="nsew")
 
     define_image()
-    put_image(main_frame)
-    check_start()
+    kw = put_image(main_frame)
+    root.after(2000, check_start, kw)
 
     # アプリフレームの作成と設置
 
