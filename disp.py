@@ -5,16 +5,14 @@ import random
 import sys
 from threading import Thread
 
-
 # 表示するウィンドウの幅と高さ
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 600
 
-SENSOR_DISTANCE = 9
+#センサー距離
+SENSOR_DISTANCE = 3
 
 global transcribe_words
-
-
 
 class Window(tk.Tk): 
     """
@@ -57,6 +55,21 @@ class Window(tk.Tk):
 
 def change_window(window):
     window.tkraise()
+
+def put_image(frame):
+     #Canvasの作成
+    canvas = tk.Canvas(frame, bg = "black" ,width=656, height=656)
+    item = canvas.create_image(0, 0, image=imglist[0],anchor='nw')
+    #Canvasを配置
+    canvas.pack()
+
+    kw = {
+        "canvas": canvas,
+        "item": item
+    }
+
+    root.after(3000, repeat_image, kw)
+
 
 def repeat_image(kw):
     """
@@ -131,7 +144,7 @@ def reading(sensor):
     readingのテスト用
     """
     rnd = random.randint(0,10)
-    return rnd
+    return 2
 
 def check_phone():
     """
@@ -140,8 +153,8 @@ def check_phone():
     dis = reading(0)
     print('phone distance : ' + str(dis))
     if SENSOR_DISTANCE > dis:
-        boot_flag = True
         print('phone available')
+        return True
 
 def receive_words():
     """
@@ -168,18 +181,29 @@ def get_words():
 
     return word
 
+def check_start():
+    phone_able = check_phone()
+    word = get_words()
+    print("get sentence :" + word)
+    print("flag : " + str(word == "sentence1 START\n"))
+
+    if phone_able and word == "sentence1 START\n":
+        print('start app')
+        change_window(sub_frame)
+    else:
+        root.after(500, check_start)
+
+
 if __name__ == "__main__":
-    global boot_flag
     transcribe_words = []
 
+    thread = Thread(target = receive_words)
+    thread.start()
 
     # rootメインウィンドウの設定
     root = Window('メインウィンドウ')
     root.setSize(WINDOW_WIDTH, WINDOW_HEIGHT)
-    root.disableMaximum()
     #root.attributes('-fullscreen', True)
-
-    check_phone()
 
     # rootメインウィンドウのグリッドを 1x1 にする
     root.grid_rowconfigure(0, weight=1)
@@ -191,13 +215,15 @@ if __name__ == "__main__":
 
     # 各種ウィジェットの作成
     label1_frame = tk.Label(main_frame, text="メインウィンドウ")
-    button_change = tk.Button(main_frame, text="Go to frame1", command=lambda:change_window(sub_frame),width=10,height=10, bg="#80ff80")
-
-    define_image()
+    #button_change = tk.Button(main_frame, text="Go to frame1", command=lambda:change_window(sub_frame),width=10,height=10, bg="#80ff80")
 
     # 各種ウィジェットの設置
     label1_frame.pack(side=tk.TOP)
-    button_change.pack(side=tk.TOP)
+    #button_change.pack(side=tk.TOP)
+
+    check_start()
+
+    define_image()
 
     # アプリフレームの作成と設置
     sub_frame = tk.Frame(root)
@@ -211,19 +237,9 @@ if __name__ == "__main__":
     label1_frame_app.pack()
     button_change_frame_app.pack()
 
-    #Canvasの作成
-    canvas = tk.Canvas(sub_frame, bg = "black" ,width=656, height=656)
-    item = canvas.create_image(0, 0, image=imglist[0],anchor='nw')
-    #Canvasを配置
-    canvas.pack()
-
-    kw = {
-        "canvas": canvas,
-        "item": item
-    }
+    put_image(sub_frame)
 
     # mainframeを前面にする
     main_frame.tkraise()
 
-    root.after(3000, repeat_image, kw)
     root.mainloop()
