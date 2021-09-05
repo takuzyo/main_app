@@ -100,7 +100,7 @@ def reading(sensor):
     try:
         import RPi.GPIO as GPIO
     except ModuleNotFoundError:
-        return 4
+        return 2
     GPIO.setwarnings(False)
 
     GPIO.setmode(GPIO.BOARD)
@@ -235,11 +235,8 @@ class App(tk.Frame):
             fin_img = Image.open('img/end.png')
             fin_img = ImageTk.PhotoImage(fin_img)
 
-            canvas = tk.Canvas(self, bg = "black" ,width=897, height=497)
-            canvas.create_image(0, 0, image=fin_img,anchor='nw')
+            self.canvas.itemconfig(self.item, image=fin_img)
 
-            #Canvasを配置
-            canvas.pack(expand = True)
         else:
             mystery_image = self.mystery.get_mystery()
 
@@ -248,8 +245,7 @@ class App(tk.Frame):
             img = ImageTk.PhotoImage(img)
 
             self.canvas.itemconfig(self.item, image=img)
-
-        master.after(500, self.check_voice, master)
+            master.after(500, self.check_voice, master)
 
     def check_voice(self, master):
         #print(transcribe_words)
@@ -257,10 +253,21 @@ class App(tk.Frame):
         word = get_words()
         flag = self.mystery.check_answer(word)
         if flag:
-            self.change_image(master)
-        else:
-            master.after(500, self.check_voice, master)
+            global true_img
+            true_img = Image.open('./img/true.png')
+            true_img = ImageTk.PhotoImage(true_img)
 
+            self.canvas.itemconfig(self.item, image=true_img)
+
+            master.after(2000, self.change_image, master)
+        else:
+            global false_img
+            false_img = Image.open('./img/false.png')
+            false_img = ImageTk.PhotoImage(false_img)
+
+            self.canvas.itemconfig(self.item, image=false_img)
+
+            master.after(2000, self.change_image, master)
 
 
 if __name__ == "__main__":
