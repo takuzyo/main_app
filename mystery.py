@@ -19,7 +19,6 @@ class Mystery:
         request_url = f'{self.mystery_url}/{self.now_mystery_id}?token={self.TOKEN}'
         res = requests.get(request_url)
         val = json.loads(res.text)
-        print(val)
 
         return val["img_url"]
     
