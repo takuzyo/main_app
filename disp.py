@@ -158,7 +158,7 @@ def receive_words():
     while True:
         line = sys.stdin.readline()
         if 'sentence1' in line:
-            line = re.find('\](.*)\[', line)
+            line = re.findall('\](.*)\[', line)
             line = line[0].replace(" ","")
             transcribe_words.append(line)
         
