@@ -17,7 +17,7 @@ WINDOW_HEIGHT = 600
 SENSOR_DISTANCE = 3
 
 #開始用のセリフ
-START_SENTENCE = 'START'
+START_SENTENCE = 'すたーと'
 
 global transcribe_words
 
