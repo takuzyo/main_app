@@ -33,7 +33,6 @@ class Window(tk.Tk):
         tk.Tk.__init__(self)
         self.title(text)
 
-
     def setSize(self, width, height, isCenter = True):
         """
         サイズを指定、ディスプレイ中央に表示する
@@ -67,7 +66,7 @@ def put_image(frame):
     #Canvasの作成
 
     canvas = tk.Canvas(frame, bg = "black" ,width=897, height=497)
-    item = canvas.create_image(0, 0, image=imglist[0],anchor='nw')
+    item = canvas.create_image(0, 0, image=imglist['start'],anchor='nw')
     #Canvasを配置
     canvas.pack(expand= True)
 
@@ -78,7 +77,6 @@ def put_image(frame):
 
     return kw
 
-
 def define_image():
     """
     画像読み込み
@@ -86,16 +84,30 @@ def define_image():
     img = Image.open('./img/start.png')
     img = ImageTk.PhotoImage(img)
 
+    img2 = Image.open('./img/end.png')
+    img2 = ImageTk.PhotoImage(img2)
+
+    img3 = Image.open('./img/false.png')
+    img3 = ImageTk.PhotoImage(img3)
+
+    img4 = Image.open('./img/true.png')
+    img4 = ImageTk.PhotoImage(img4)
+
+    img5 = Image.open('./img/start2.png')
+    img5 = ImageTk.PhotoImage(img5)
 
     global imglist
-    imglist = [img]
-
+    imglist = {'start': img, 
+                'end': img2, 
+                'false': img3,
+                'true': img4,
+                'start2': img5}
+    
 
 def reading(sensor):
     """
     超音波センサーの読み込み
     """
-
 
     try:
         import RPi.GPIO as GPIO
@@ -198,7 +210,6 @@ def delete_img(kw):
     kw['canvas'].itemconfig(kw['item'], image=imglist[0])
     root.after(2000, check_start, kw)
 
-
 class App(tk.Frame):
     def __init__(self, master = None):
         
@@ -232,10 +243,7 @@ class App(tk.Frame):
     def change_image(self, master):
         #終了判定
         if self.mystery.fin:
-            fin_img = Image.open('img/end.png')
-            fin_img = ImageTk.PhotoImage(fin_img)
-
-            self.canvas.itemconfig(self.item, image=fin_img)
+            self.canvas.itemconfig(self.item, image=imglist['end'])
 
         else:
             mystery_image = self.mystery.get_mystery()
@@ -253,22 +261,14 @@ class App(tk.Frame):
         word = get_words()
         flag = self.mystery.check_answer(word)
         if flag:
-            global true_img
-            true_img = Image.open('./img/true.png')
-            true_img = ImageTk.PhotoImage(true_img)
-
-            self.canvas.itemconfig(self.item, image=true_img)
+            self.canvas.itemconfig(self.item, image=imglist['true'])
 
             master.after(2000, self.change_image, master)
         else:
-            global false_img
-            false_img = Image.open('./img/false.png')
-            false_img = ImageTk.PhotoImage(false_img)
-
-            self.canvas.itemconfig(self.item, image=false_img)
+            if word is not None:
+                self.canvas.itemconfig(self.item, image=imglist['false'])
 
             master.after(2000, self.change_image, master)
-
 
 if __name__ == "__main__":
     transcribe_words = []
@@ -292,8 +292,6 @@ if __name__ == "__main__":
     define_image()
     kw = put_image(main_frame)
     root.after(2000, check_start, kw)
-
-    # アプリフレームの作成と設置
 
     # mainframeを前面にする
     main_frame.tkraise()
