@@ -1,5 +1,6 @@
 # tkinterのインポート
 import tkinter as tk
+from tkinter.constants import FALSE
 from PIL import Image, ImageTk
 import random
 import sys
@@ -202,7 +203,9 @@ class App(tk.Frame):
         label1_frame_app = tk.Label(self, text="アプリウィンドウ")
         label1_frame_app.pack()
         self.mystery = Mystery()
-
+        
+    def change_image():
+        return False
 
 
 if __name__ == "__main__":
