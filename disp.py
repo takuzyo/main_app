@@ -3,6 +3,8 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import random
 import sys
+from threading import Thread
+
 
 # 表示するウィンドウの幅と高さ
 WINDOW_WIDTH = 1024
@@ -58,7 +60,7 @@ def change_window(window):
 
 def repeat_image(kw):
     """
-    画像を読み込む
+    画像を定期的に切り替える
     """
     rnd = random.randint(0,3)
     print(imglist[rnd])
@@ -68,6 +70,9 @@ def repeat_image(kw):
     root.after(3000, repeat_image, kw)
 
 def define_image():
+    """
+    画像読み込み
+    """
     img = Image.open('sample.jpg')
     img = ImageTk.PhotoImage(img)
 
@@ -85,6 +90,10 @@ def define_image():
 
 '''
 def reading(sensor):
+    """
+    超音波センサーの読み込み
+    """
+
     import time
     import RPi.GPIO as GPIO
     GPIO.setwarnings(False)
@@ -118,10 +127,16 @@ def reading(sensor):
 '''
 
 def reading(sensor):
+    """
+    readingのテスト用
+    """
     rnd = random.randint(0,10)
     return rnd
 
 def check_phone():
+    """
+    スマホが装置に置かれたか確認
+    """
     dis = reading(0)
     print('phone distance : ' + str(dis))
     if SENSOR_DISTANCE > dis:
@@ -129,6 +144,9 @@ def check_phone():
         print('phone available')
 
 def receive_words():
+    """
+    juliusからの標準入力を受け取り単語を取得
+    """
     global transcribe_words
     while True:
         line = sys.stdin.readline()
@@ -140,6 +158,9 @@ def receive_words():
             break
 
 def get_words():
+    """
+    受け取った単語を使えるように
+    """
     word = None
     if len(transcribe_words):
         word = transcribe_words[0]
