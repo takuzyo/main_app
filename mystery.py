@@ -6,10 +6,11 @@ class Mystery:
 
     def __init__(self):
         #tokenは編集してね♡
-        self.TOKEN = 1
+        self.TOKEN = 2
         self.mystery_url = "http://163.43.107.141:5000/api/game"
         #現在の問題番号
         self.now_mystery_id = 1
+        self.fin = False
     
     def get_mystery(self):
         """
@@ -46,6 +47,8 @@ class Mystery:
         TODO: 処理追加
         """
         self.now_mystery_id += 1
+        if self.now_mystery_id == 4:
+            self.fin = True
         return
 
 

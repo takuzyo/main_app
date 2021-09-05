@@ -56,3 +56,11 @@ echo sentence1 HELLO WORLD3
 echo HELLO WORLD4
 echo HELLO WORLD5
 echo sentence1 HELLO WORLD9
+
+echo sentence1 ‚Ü‚·‚­
+echo HELLO WORLD1
+echo HELLO WORLD2
+echo sentence1 HELLO WORLD3
+echo HELLO WORLD4
+echo HELLO WORLD5
+echo sentence1 HELLO WORLD9

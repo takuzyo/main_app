@@ -65,10 +65,10 @@ def change_window(window):
 
 def put_image(frame):
      #Canvasの作成
-    canvas = tk.Canvas(frame, bg = "black" ,width=656, height=656)
+    canvas = tk.Canvas(frame, bg = "black" ,width=897, height=497)
     item = canvas.create_image(0, 0, image=imglist[0],anchor='nw')
     #Canvasを配置
-    canvas.pack()
+    canvas.pack(expand= True)
 
     kw = {
         "canvas": canvas,
@@ -82,7 +82,7 @@ def repeat_image(kw):
     """
     画像を定期的に切り替える
     """
-    rnd = random.randint(0,3)
+    rnd = random.randint(0,(len(imglist) - 1))
     print(imglist[rnd])
 
     kw['canvas'].itemconfig(kw['item'], image=imglist[rnd])
@@ -93,20 +93,12 @@ def define_image():
     """
     画像読み込み
     """
-    img = Image.open('sample.jpg')
+    img = Image.open('./img/start.png')
     img = ImageTk.PhotoImage(img)
 
-    img2 = Image.open('sample2.jpg')
-    img2 = ImageTk.PhotoImage(img2)
-
-    img3 = Image.open('sample3.jpg')
-    img3 = ImageTk.PhotoImage(img3)
-
-    img4 = Image.open('sample4.jpg')
-    img4 = ImageTk.PhotoImage(img4)
 
     global imglist
-    imglist = [img, img2, img3, img4]
+    imglist = [img]
 
 
 def reading(sensor):
@@ -184,11 +176,16 @@ def get_words():
     return word
 
 def check_start():
+    """
+    開始確認
+    """
     phone_able = check_phone()
     word = get_words()
 
     if phone_able and word == "sentence1 " + START_SENTENCE + "\n":
         print('start app')
+        sub_frame = App(root)
+
         change_window(sub_frame)
     else:
         root.after(500, check_start)
@@ -201,28 +198,47 @@ class App(tk.Frame):
         #self.pack()
         self.grid(row=0, column=0, sticky="nsew")
 
-        label1_frame_app = tk.Label(self, text="アプリウィンドウ")
+        label1_frame_app = tk.Label(self, text="答えがわかったら叫んでね！")
         label1_frame_app.pack()
         self.mystery = Mystery()
 
         self.change_image(master)
 
     def change_image(self, master):
+        #終了判定
+        if self.mystery.fin:
+            fin_img = Image.open('img/end.png')
+            fin_img = ImageTk.PhotoImage(fin_img)
+
+            canvas = tk.Canvas(self, bg = "black" ,width=897, height=497)
+            canvas.create_image(0, 0, image=fin_img,anchor='nw')
+
+            #Canvasを配置
+            canvas.pack(expand = True)
+        
         mystery_image = self.mystery.get_mystery()
 
         global img
         img = Image.open(mystery_image)
         img = ImageTk.PhotoImage(img)
 
-        canvas = tk.Canvas(self, bg = "black" ,width=762, height=433)
+        canvas = tk.Canvas(self, bg = "black" ,width=897, height=497)
         canvas.create_image(0, 0, image=img,anchor='nw')
         #Canvasを配置
-        canvas.pack()
+        canvas.pack(expand = True)
 
-        master.after(500, self.check_voice)
+        master.after(500, self.check_voice, master)
     
-    def check_voice():
-        return False
+    def check_voice(self, master):
+        #print(transcribe_words)
+
+        word = get_words().split()
+        print(word)
+        flag = self.mystery.check_answer(word[1])
+        if flag:
+            self.change_image()
+        else:
+            master.after(500, self.check_voice, master)
     
 
 
@@ -235,7 +251,7 @@ if __name__ == "__main__":
     # rootメインウィンドウの設定
     root = Window('メインウィンドウ')
     root.setSize(WINDOW_WIDTH, WINDOW_HEIGHT)
-    #root.attributes('-fullscreen', True)
+    root.attributes('-fullscreen', True)
 
     # rootメインウィンドウのグリッドを 1x1 にする
     root.grid_rowconfigure(0, weight=1)
@@ -250,7 +266,6 @@ if __name__ == "__main__":
     check_start()
 
     # アプリフレームの作成と設置
-    sub_frame = App(root)
 
     # mainframeを前面にする
     main_frame.tkraise()
