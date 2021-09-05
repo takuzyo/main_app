@@ -7,7 +7,7 @@ import sys
 from threading import Thread
 from mystery import Mystery
 import time
-
+import re
 
 # 表示するウィンドウの幅と高さ
 WINDOW_WIDTH = 1024
@@ -166,10 +166,12 @@ def receive_words():
     while True:
         line = sys.stdin.readline()
         if 'sentence1' in line:
+            line = re.find('\](.*)\[', line)
+            line = line[0].replace(" ","")
             transcribe_words.append(line)
         
         if line == "":
-            print("break")
+            print("receive julius results finish")
             break
 
 def get_words():
