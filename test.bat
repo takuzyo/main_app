@@ -24,6 +24,7 @@ echo HELLO WORLD4
 echo sentence1 HELLO WORLD5
 echo HELLO WORLD6
 
+timeout 2
 echo sentence1 START
 echo HELLO WORLD1
 echo HELLO WORLD2

@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import random
 import sys
 from threading import Thread
+from mystery import Mystery
 
 # 表示するウィンドウの幅と高さ
 WINDOW_WIDTH = 1024
@@ -115,7 +116,6 @@ def reading(sensor):
     try:
         import RPi.GPIO as GPIO
     except ModuleNotFoundError:
-        rnd = random.randint(0,10)
         return 2
     GPIO.setwarnings(False)
 
@@ -145,7 +145,7 @@ def reading(sensor):
         GPIO.cleanup()
     else:
         print("Incorrect usonic() function varible.")
-        
+
 def check_phone():
     """
     スマホが装置に置かれたか確認
@@ -192,6 +192,19 @@ def check_start():
         root.after(500, check_start)
 
 
+class App(tk.Frame):
+    def __init__(self, master = None):
+        
+        super().__init__(master)
+        #self.pack()
+        self.grid(row=0, column=0, sticky="nsew")
+
+        label1_frame_app = tk.Label(self, text="アプリウィンドウ")
+        label1_frame_app.pack()
+        self.mystery = Mystery()
+
+
+
 if __name__ == "__main__":
     transcribe_words = []
 
@@ -211,31 +224,12 @@ if __name__ == "__main__":
     main_frame = tk.Frame(root)
     main_frame.grid(row=0, column=0, sticky="nsew")
 
-    # 各種ウィジェットの作成
-    label1_frame = tk.Label(main_frame, text="メインウィンドウ")
-    #button_change = tk.Button(main_frame, text="Go to frame1", command=lambda:change_window(sub_frame),width=10,height=10, bg="#80ff80")
-
-    # 各種ウィジェットの設置
-    label1_frame.pack(side=tk.TOP)
-    #button_change.pack(side=tk.TOP)
-
+    define_image()
+    put_image(main_frame)
     check_start()
 
-    define_image()
-
     # アプリフレームの作成と設置
-    sub_frame = tk.Frame(root)
-    sub_frame.grid(row=0, column=0, sticky="nsew")
-
-    # 各種ウィジェットの作成
-    label1_frame_app = tk.Label(sub_frame, text="アプリウィンドウ")
-    button_change_frame_app = tk.Button(sub_frame, text="メインウィンドウに移動", command=lambda:change_window(main_frame))
-
-    # 各種ウィジェットの設置
-    label1_frame_app.pack()
-    button_change_frame_app.pack()
-
-    put_image(sub_frame)
+    sub_frame = App(root)
 
     # mainframeを前面にする
     main_frame.tkraise()
