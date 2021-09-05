@@ -26,3 +26,10 @@ class Mystery:
         TODO: 判定
         """
         return False
+    
+    def count_up(self):
+        """
+        正解したらidを上げる
+        TODO: 処理追加
+        """
+        return False
